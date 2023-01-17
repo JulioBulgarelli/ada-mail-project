@@ -32,7 +32,7 @@ public interface MailService {
     List<String> listarRemetentesComEnviosHoje();
 
     /* h) Dada uma lista de palavras, eliminar todos os mails de um dado endereço que no seu assunto contenham uma qualquer destas (anti-spam); */
-    int removerEmailsDeContendoPalavras(String remetente, String... argumentos);
+    void removerEmailsDeContendoPalavras(String remetente, String... assunto);
 
     /* i) Eliminar todos os mails de um dado endereço anteriores a uma data dada; */
     int removerEmailsDeAntesDe(String remetente, LocalDateTime dataHora);

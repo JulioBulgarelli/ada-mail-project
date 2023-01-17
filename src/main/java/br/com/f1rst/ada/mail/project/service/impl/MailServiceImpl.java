@@ -57,14 +57,26 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public List<String> listarRemetentesComEnviosHoje() {
-		// TODO Auto-generated method stub
+		/*Jeff*/// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int removerEmailsDeContendoPalavras(String remetente, String... argumentos) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void removerEmailsDeContendoPalavras(String remetente, List<String> assunto) {
+	/*Jeff*/
+	if (!this.containsKey(remetente)) {
+			return;
+		}
+		List<EMail> emails = this.get(remetente);
+		emails.removeIf(email -> {
+			for (String palavra : assunto) {
+				if (email.getSubject().contains(palavra)) {
+					return true;
+				}
+			}
+			return false;
+		});
+		this.put(remetente, emails);
 	}
 
 	@Override
