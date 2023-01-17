@@ -57,8 +57,15 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public List<String> listarRemetentesComEnviosHoje() {
-		/*Jeff*/// TODO Auto-generated method stub
-		return null;
+		/*Jeff*/
+		List<String> remetentes = new ArrayList<>()/
+		Date today = new Date();
+		for (String remetente : this.keySet())(
+			for EMail email : this.get(remetentes)){
+			if (email.getSentDate().equals(today.toString().subString(0,10))){
+				remetentes.add(remetentes);
+			}
+		}
 	}
 
 	@Override
