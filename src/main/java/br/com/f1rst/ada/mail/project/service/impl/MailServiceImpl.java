@@ -5,12 +5,7 @@ import br.com.f1rst.ada.mail.project.model.MailMap;
 import br.com.f1rst.ada.mail.project.service.MailService;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
+import java.util.*;
 
 
 public class MailServiceImpl implements MailService {
@@ -47,45 +42,78 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public Set<EMail> obterEmailsComPalavrasNoAssunto(String... argumentos) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<EMail> emails = new TreeSet<>();
+
+		for (Map.Entry<String, List<EMail>> email : mailMap.entrySet()) {
+			for (EMail e : email.getValue()) {
+				boolean include = true;
+
+				for (String s : argumentos) {
+					if (!e.getAssunto().toLowerCase().contains(s.toLowerCase())) {
+						include = false;
+						break;
+					}
+				}
+
+				if (include) {
+					emails.add(e);
+				}
+			}
+		}
+
+		return emails;
 	}
 
 	@Override
 	public int removerEmailsAntesDe(LocalDateTime dataHora) {
-		// TODO Auto-generated method stub
-		return 0;
+		List<EMail> emailsRemovidos = new ArrayList<>();
+
+		for (Map.Entry<String, List<EMail>> email : mailMap.entrySet()) {
+			for (EMail e : email.getValue()) {
+				if (e.getDataRecebimento().isBefore(dataHora)) {
+					emailsRemovidos.add(e);
+				}
+			}
+		}
+
+		return emailsRemovidos.size();
 	}
 
 	@Override
 	public List<String> listarRemetentesComEnviosHoje() {
 		/*Jeff*/
-		List<String> remetentes = new ArrayList<>()/
-		Date today = new Date();
-		for (String remetente : this.keySet())(
-			for EMail email : this.get(remetentes)){
-			if (email.getSentDate().equals(today.toString().subString(0,10))){
-				remetentes.add(remetentes);
+		List<String> remetentes = new ArrayList<>();
+		LocalDateTime today = LocalDateTime.now();
+
+		for (Map.Entry<String, List<EMail>> remetente : mailMap.entrySet()) {
+			for (EMail email : remetente.getValue()) {
+				if (email.getDataEnvio().isEqual(today)) {
+					remetentes.add(remetente.getKey());
+				}
 			}
 		}
+
+		return remetentes;
 	}
 
 	@Override
-	public void removerEmailsDeContendoPalavras(String remetente, List<String> assunto) {
-	/*Jeff*/
-	if (!this.containsKey(remetente)) {
+	public void removerEmailsDeContendoPalavras(String remetente, String... assunto) {
+		/*Jeff*/
+		if (!mailMap.containsKey(remetente)) {
 			return;
 		}
-		List<EMail> emails = this.get(remetente);
+
+		List<EMail> emails = mailMap.get(remetente);
 		emails.removeIf(email -> {
 			for (String palavra : assunto) {
-				if (email.getSubject().contains(palavra)) {
+				if (email.getAssunto().contains(palavra)) {
 					return true;
 				}
 			}
 			return false;
 		});
-		this.put(remetente, emails);
+
+		mailMap.put(remetente, emails);
 	}
 
 	@Override
@@ -99,90 +127,4 @@ public class MailServiceImpl implements MailService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-/*   @Override
-    public int contarRemetentes() {
-
-    }
-
-	@Override
-    public void salvar() {
-		if (!mailMap.containsKey(address)) {
-            List<EMail> emailList = new ArrayList<>();
-            emailList.add(email);
-            mailMap.put(address, emailList);
-        } else {
-            mailMap.get(address).add(email);
-        }
-    }
-
-    @Override
-    public int contarRecebidosDe(String remetente) {
-        return 0;
-    }
-
-    @Override
-    public List<String> listarEnderecosComPalavrasNoAssunto(String... argumentos) {
-        return null;
-    }
-
-    @Override
-    public Set<EMail> obterEmailsComPalavrasNoAssunto(String... argumentos) {
-        Set<EMail> emails = new TreeSet<>();
-
-        for (Map.Entry<String, List<EMail>> email : mailMap.entrySet()) {
-            for (EMail e : email.getValue()) {
-                boolean include = true;
-
-                for (String s : argumentos) {
-                    if (!e.getAssunto().toLowerCase().contains(s.toLowerCase())) {
-                        include = false;
-                        break;
-                    }
-                }
-
-                if (include) {
-                    emails.add(e);
-                }
-            }
-        }
-
-        return emails;
-    }
-
-    @Override
-    public int removerEmailsAntesDe(LocalDateTime dataHora) {
-        List<EMail> emailsRemovidos = new ArrayList<>();
-
-        for (Map.Entry<String, List<EMail>> email : mailMap.entrySet()) {
-            for (EMail e : email.getValue()) {
-                if (e.getDataRecebimento().isBefore(dataHora)) {
-                    emailsRemovidos.add(e);
-                }
-            }
-        }
-
-        return emailsRemovidos.size();
-    }
-
-    @Override
-    public List<String> listarRemetentesComEnviosHoje() {
-        return null;
-    }
-
-    @Override
-    public int removerEmailsDeContendoPalavras(String remetente, String... argumentos) {
-        return 0;
-    }
-
-    @Override
-    public int removerEmailsDeAntesDe(String remetente, LocalDateTime dataHora) {
-        return 0;
-    }
-
-    @Override
-    public List<String> listarRemetentesDePais(String pais) {
-        return null;
-    }
 }
