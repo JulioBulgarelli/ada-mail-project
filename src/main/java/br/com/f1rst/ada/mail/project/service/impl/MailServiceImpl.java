@@ -4,6 +4,7 @@ import br.com.f1rst.ada.mail.project.model.EMail;
 import br.com.f1rst.ada.mail.project.model.MailMap;
 import br.com.f1rst.ada.mail.project.service.MailService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -30,14 +31,34 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public int contarRecebidosDe(String remetente) {
-		// TODO Auto-generated method stub
+		for (Map.Entry<String, List<EMail>> pair : mailMap.entrySet()) {
+			if(pair.getKey().equals(remetente) ){
+				return (pair.getValue()).size();
+			}
+		}
 		return 0;
 	}
 
 	@Override
 	public List<String> listarEnderecosComPalavrasNoAssunto(String... argumentos) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> result = new ArrayList<>();
+		for (Map.Entry<String, List<EMail>> pair : mailMap.entrySet()) {
+			for(EMail email : pair.getValue()){
+				boolean include = true;
+
+				for (String s : argumentos) {
+					if (!email.getAssunto().toLowerCase().contains(s.toLowerCase())) {
+						include = false;
+						break;
+					}
+				}
+
+				if (include) {
+					result.add(pair.getKey()); //Se for para retornar dos itens da lista de email, seria email.remetente;
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -68,12 +89,14 @@ public class MailServiceImpl implements MailService {
 	public int removerEmailsAntesDe(LocalDateTime dataHora) {
 		List<EMail> emailsRemovidos = new ArrayList<>();
 
-		for (Map.Entry<String, List<EMail>> email : mailMap.entrySet()) {
-			for (EMail e : email.getValue()) {
+		for (Map.Entry<String, List<EMail>> remetente : mailMap.entrySet()) {
+			for (EMail e : remetente.getValue()) {
 				if (e.getDataRecebimento().isBefore(dataHora)) {
 					emailsRemovidos.add(e);
 				}
 			}
+
+			remetente.getValue().removeAll(emailsRemovidos);
 		}
 
 		return emailsRemovidos.size();
@@ -83,11 +106,11 @@ public class MailServiceImpl implements MailService {
 	public List<String> listarRemetentesComEnviosHoje() {
 		/*Jeff*/
 		List<String> remetentes = new ArrayList<>();
-		LocalDateTime today = LocalDateTime.now();
+		LocalDate today = LocalDate.now();
 
 		for (Map.Entry<String, List<EMail>> remetente : mailMap.entrySet()) {
 			for (EMail email : remetente.getValue()) {
-				if (email.getDataEnvio().isEqual(today)) {
+				if (email.getDataEnvio().toLocalDate().isEqual(today)) {
 					remetentes.add(remetente.getKey());
 				}
 			}
@@ -97,23 +120,24 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
-	public void removerEmailsDeContendoPalavras(String remetente, String... assunto) {
+	public int removerEmailsDeContendoPalavras(String remetente, String... assunto) {
 		/*Jeff*/
 		if (!mailMap.containsKey(remetente)) {
-			return;
+			return 0;
 		}
 
-		List<EMail> emails = mailMap.get(remetente);
-		emails.removeIf(email -> {
+		List<EMail> emailsRemovidos = new ArrayList<>();
+
+		for (EMail email : mailMap.get(remetente)) {
 			for (String palavra : assunto) {
-				if (email.getAssunto().contains(palavra)) {
-					return true;
+				if (email.getAssunto().toLowerCase().contains(palavra.toLowerCase())) {
+					emailsRemovidos.add(email);
 				}
 			}
-			return false;
-		});
+		}
 
-		mailMap.put(remetente, emails);
+		mailMap.get(remetente).removeAll(emailsRemovidos);
+		return emailsRemovidos.size();
 	}
 
 	@Override
