@@ -1,6 +1,7 @@
 package br.com.f1rst.ada.mail.project.service.impl;
 
 import br.com.f1rst.ada.mail.project.model.EMail;
+import br.com.f1rst.ada.mail.project.model.MailMap;
 import br.com.f1rst.ada.mail.project.service.MailService;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 public class MailServiceImpl implements MailService {
+
+    private MailMap mailMap = new MailMap();
 
     @Override
     public int contarRemetentes() {
@@ -51,7 +54,9 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public int removerEmailsDeAntesDe(String remetente, LocalDateTime dataHora) {
-        return 0;
+        return mailMap.values().stream().map(emailLists -> emailLists
+                .removeIf(email -> email.isSameSenderAndReceivedBefore(email, remetente, dataHora)))
+                .anyMatch(result -> true) ? 1 : 0;
     }
 
     @Override
