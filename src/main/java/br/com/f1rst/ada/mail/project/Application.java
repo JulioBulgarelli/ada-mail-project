@@ -18,12 +18,19 @@ public class Application {
 
         // preparar dados para testes
         MailService mailService = new MailServiceImpl();
+        mailService.salvar("Teste", new EMail("", LocalDateTime.now().minus(1, ChronoUnit.DAYS), LocalDateTime.now(), "Assunto #1", "Corpo #1"));
+
+        testA(mailService);
+        log.info("Requisito a) passou com sucesso");
 
         testB(mailService);
         log.info("Requisito b) passou com sucesso");
 
-        testA(mailService);
-        log.info("Requisito a) passou com sucesso");
+        testC(mailService);
+        log.info("Requisito c) passou com sucesso");
+
+        testD(mailService);
+        log.info("Requisito d) passou com sucesso");
 
         testE(mailService);
         log.info("Requisito e) passou com sucesso");
@@ -38,16 +45,32 @@ public class Application {
         log.info("Requisito h) passou com sucesso");
     }
 
-    private static void testB(MailService mailService) {
-
-        mailService.salvar("Teste", new EMail("", LocalDateTime.now().minus(1, ChronoUnit.DAYS), LocalDateTime.now(), "Assunto #1", "Corpo #1"));
-
-        test(mailService.contarRemetentes() > 0, "Falhou no requisito b)");
-    }
-
     private static void testA(MailService mailService) {
 
         test(mailService.contarRemetentes() > 0, "Falhou no requisito a)");
+    }
+
+    private static void testB(MailService mailService) {
+
+        test(mailService.contarRemetentes() == 1, "Falhou no requisito b)");
+    }
+
+    private static void testC(MailService mailService) {
+
+        int nenhumRemetente = mailService.contarRecebidosDe("TesteErrado");
+        test(nenhumRemetente == 0, "Falhou no requisito c)");
+
+        int umRemetente = mailService.contarRecebidosDe("Teste");
+        test(umRemetente == 1, "Falhou no requisito c)");
+    }
+
+    private static void testD(MailService mailService) {
+
+        List<String> teste1QuestaoD = mailService.listarEnderecosComPalavrasNoAssunto("Assunto", "1");
+        test(teste1QuestaoD.size() == 1, "Falhou no requisito d)");
+
+        List<String> teste2QuestaoD = mailService.listarEnderecosComPalavrasNoAssunto("Corpo", "1");
+        test(teste2QuestaoD.isEmpty(), "Falhou no requisito d)");
     }
 
     private static void testE(MailService mailService) {

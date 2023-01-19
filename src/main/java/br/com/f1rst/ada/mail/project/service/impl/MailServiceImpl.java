@@ -31,14 +31,34 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public int contarRecebidosDe(String remetente) {
-		// TODO Auto-generated method stub
+		for (Map.Entry<String, List<EMail>> pair : mailMap.entrySet()) {
+			if(pair.getKey().equals(remetente) ){
+				return (pair.getValue()).size();
+			}
+		}
 		return 0;
 	}
 
 	@Override
 	public List<String> listarEnderecosComPalavrasNoAssunto(String... argumentos) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> result = new ArrayList<>();
+		for (Map.Entry<String, List<EMail>> pair : mailMap.entrySet()) {
+			for(EMail email : pair.getValue()){
+				boolean include = true;
+
+				for (String s : argumentos) {
+					if (!email.getAssunto().toLowerCase().contains(s.toLowerCase())) {
+						include = false;
+						break;
+					}
+				}
+
+				if (include) {
+					result.add(pair.getKey()); //Se for para retornar dos itens da lista de email, seria email.remetente;
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
