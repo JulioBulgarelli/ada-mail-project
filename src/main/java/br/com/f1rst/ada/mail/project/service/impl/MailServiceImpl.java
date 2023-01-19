@@ -124,7 +124,12 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public List<String> listarRemetentesDePais(String pais) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> listaRemetentes = new ArrayList<>();
+        for (Map.Entry<String, List<EMail>> emailList : mailMap.entrySet()) {
+            if(emailList.getKey().endsWith(pais)){
+                listaRemetentes.add(emailList.getKey());
+            }
+        }
+		return listaRemetentes;
 	}
 }
