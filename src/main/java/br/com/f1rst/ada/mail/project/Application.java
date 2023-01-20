@@ -43,6 +43,9 @@ public class Application {
 
         testH(mailService);
         log.info("Requisito h) passou com sucesso");
+
+        testJ(mailService);
+        log.info("Requisito j) passou com sucesso");
     }
 
     private static void testA(MailService mailService) {
@@ -112,6 +115,35 @@ public class Application {
 
         int umRemovido = mailService.removerEmailsDeContendoPalavras("Teste", "Corpo", "1");
         test(umRemovido == 1, "Falhou no requisito h)");
+    }
+
+    private static void testJ(MailService mailService){
+
+        mailService.salvar("teste@1.com.br", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+        mailService.salvar("teste@2.com.br", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+
+        mailService.salvar("teste@3.com.uk", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+
+        mailService.salvar("teste@4.com.ca", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+        mailService.salvar("teste@5.com.ca", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+        mailService.salvar("teste@6.com.ca", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+
+        mailService.salvar("teste@7.com.fr", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+        mailService.salvar("teste@8.com.fr", new EMail("", LocalDateTime.now(), LocalDateTime.now(), "AssuntoTesteJ", "Mensagem email"));
+
+        List<String> listaRemetentes;
+
+        listaRemetentes = mailService.listarRemetentesDePais(".com.br");
+        test(listaRemetentes.size() == 2, "Falhou no requisito j)");
+
+        listaRemetentes = mailService.listarRemetentesDePais(".com.uk");
+        test(listaRemetentes.size() == 1, "Falhou no requisito j)");
+
+        listaRemetentes = mailService.listarRemetentesDePais(".com.ca");
+        test(listaRemetentes.size() == 3, "Falhou no requisito j)");
+
+        listaRemetentes = mailService.listarRemetentesDePais(".com.fr");
+        test(listaRemetentes.size() == 2, "Falhou no requisito j)");
     }
 
     private static void test(boolean condition, String message) {
